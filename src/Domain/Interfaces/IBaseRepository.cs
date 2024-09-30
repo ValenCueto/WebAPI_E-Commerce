@@ -8,5 +8,10 @@ namespace Domain.Interfaces
 {
     public interface IBaseRepository<T> where T : class
     {
+        List<T> GetAll();
+        T Create(T entity);
+        T Delete(T entity);
+        void Update(T entity);
+
     }
 }

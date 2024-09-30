@@ -10,6 +10,9 @@ namespace Infrastructure.Repositories
 {
     public class CartRepository : BaseRepository<Cart>, ICartRepository
     {
+        public CartRepository(ApplicationContext context) : base(context) 
+        {
 
+        }
     }
 }
