@@ -1,22 +1,24 @@
-﻿using Domain.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Domain.Enums;
 
-namespace Domain.Entities
+namespace Application.Models
 {
-    public class User
+    public class UserDto
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int Id { get; set; }
         public string? Name { get; set; }
+
+        [EmailAddress]
         public string? Email { get; set; }
+
+        [Required]
         public string? Password { get; set; }
-        public RolEnum Rol { get; set; }
+
+        public RolEnum? Rol { get; set; } = null;
+
     }
 }
