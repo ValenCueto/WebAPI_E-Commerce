@@ -10,7 +10,7 @@ namespace Domain.Entities
     public class Order
     {
         public int Id { get; set; }
-        public List<Product> Products { get; set; }
+        public List<OrderDetail> Details { get; set; }
         public float TotalPrice { get; set; }
         public User Client { get; set; }
     }

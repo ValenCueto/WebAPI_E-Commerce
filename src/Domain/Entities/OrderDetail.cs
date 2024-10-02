@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    internal class OderDetail
+    public class OrderDetail
     {
         public int Id { get; set; }
         public int Quantity { get; set; }

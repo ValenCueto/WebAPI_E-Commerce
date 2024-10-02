@@ -9,7 +9,7 @@ namespace Domain.Entities
     public class Cart
     {
         public int Id { get; set; } 
-        public List<Product>? Products { get; set; }
+        public List<CartDetail>? Details { get; set; }
         public float TotalPrice { get; set; }
     }
 }

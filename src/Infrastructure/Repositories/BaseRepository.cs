@@ -23,7 +23,7 @@ namespace Infrastructure.Repositories
 
         //public T GetById<TId>(TId id)
         //{
-        //    return _context.Set<T>().Find(new object[] {id}  
+        //    return _context.Set<T>().Find(new object[] {id}
         //}
 
         public T Create(T entity)
