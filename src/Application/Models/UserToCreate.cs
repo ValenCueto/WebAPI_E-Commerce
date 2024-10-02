@@ -8,7 +8,7 @@ using Domain.Enums;
 
 namespace Application.Models
 {
-    public class UserDto
+    public class UserToCreate
     {
         public string? Name { get; set; }
 

@@ -20,13 +20,23 @@ namespace Application.Services
             _userRepository = userRepository;
         }
 
-        public int Create(UserDto userDto)
+        public List<User> GetAll()
+        {
+            return _userRepository.GetAll();
+        }
+
+        public User? GetById(int id)
+        {
+            return _userRepository.GetById(id);
+        }
+
+        public int Create(UserToCreate userToCreate)
         {
             var user = new User()
             {
-                Name = userDto.Name,
-                Email = userDto.Email,
-                Password = userDto.Password,
+                Name = userToCreate.Name,
+                Email = userToCreate.Email,
+                Password = userToCreate.Password,
                 Rol = RolEnum.Client
             };
 
@@ -35,9 +45,19 @@ namespace Application.Services
             return user.Id;
         }
 
-        public void Delete(int Id)
+        public void Delete(int id)
         {
+            var user = _userRepository.GetById(id);
+            _userRepository.Delete(user);
+        }
 
+        public void Update(UserToUpdate userToUpdate, int id)
+        {
+            var user = _userRepository.GetById(id);
+            user.Name = userToUpdate.Name;
+            user.Email = userToUpdate.Email;
+            user.Password = userToUpdate.Password;  
+            _userRepository.Update(user);
         }
     }
 

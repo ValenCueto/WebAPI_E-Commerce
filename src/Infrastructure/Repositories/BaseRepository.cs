@@ -21,10 +21,10 @@ namespace Infrastructure.Repositories
             return _context.Set<T>().ToList();
         }
 
-        //public T GetById<TId>(TId id)
-        //{
-        //    return _context.Set<T>().Find(new object[] {id}
-        //}
+        public T? GetById(int id)
+        {
+            return _context.Set<T>().Find(id);
+        }
 
         public T Create(T entity)
         {
@@ -33,11 +33,10 @@ namespace Infrastructure.Repositories
             return entity;
         }
 
-        public T Delete(T entity) 
+        public void Delete(T entity) 
         {
             _context.Set<T>().Remove(entity);
             _context.SaveChanges();
-            return entity;
         }
 
         public void Update(T entity)
