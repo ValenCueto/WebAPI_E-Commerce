@@ -9,7 +9,7 @@ namespace Infrastructure.Repositories
 {
     public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
     {
-        public readonly ApplicationContext _context;
+        protected readonly ApplicationContext _context;
 
         public BaseRepository(ApplicationContext context)
         {

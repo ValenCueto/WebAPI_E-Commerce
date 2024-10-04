@@ -54,6 +54,10 @@ namespace Application.Services
         public void Update(UserToUpdate userToUpdate, int id)
         {
             var user = _userRepository.GetById(id);
+            if (user == null)
+            {
+                throw new Exception($"El usuario con ID {id} no fue encontrado.");
+            }
             user.Name = userToUpdate.Name;
             user.Email = userToUpdate.Email;
             user.Password = userToUpdate.Password;  

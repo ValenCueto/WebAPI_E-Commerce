@@ -9,5 +9,6 @@ namespace Domain.Interfaces
 {
     public interface IProductRepository : IBaseRepository<Product>
     {
+        Product? GetByName(string name);
     }
 }

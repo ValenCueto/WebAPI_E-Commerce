@@ -10,10 +10,10 @@ namespace Infrastructure
 {
     public class ApplicationContext : DbContext
     {
-        DbSet<User> Users { get; set; }
-        DbSet<Product> Products { get; set; }
-        DbSet<Order> Orders { get; set; }
-        DbSet<Cart> Carts { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Cart> Carts { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) 
         {
