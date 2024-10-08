@@ -9,6 +9,8 @@ namespace Domain.Interfaces
 {
     public interface ICartRepository : IBaseRepository<Cart>
     {
-
+        Cart? GetCartWithDetails(int cartId);
+        CartDetail? GetDetailByProduct(int cartId, int productId);
+        void RemoveFromCart(int cartId, int productId);
     }
 }
