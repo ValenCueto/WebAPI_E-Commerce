@@ -26,12 +26,7 @@ namespace Infrastructure.Repositories
             return cart?.Details?.FirstOrDefault(d => d.Product?.Id == productId);
         }
 
-        public void RemoveFromCart(int cartId, int productId) 
-        {
-            var cart = GetCartWithDetails(cartId);
-            cart?.Details?.Remove(GetDetailByProduct(cartId, productId));
-            _context.SaveChanges();
-        }
+        
     }
 
 

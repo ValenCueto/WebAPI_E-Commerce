@@ -11,6 +11,6 @@ namespace Domain.Interfaces
     {
         Cart? GetCartWithDetails(int cartId);
         CartDetail? GetDetailByProduct(int cartId, int productId);
-        void RemoveFromCart(int cartId, int productId);
+        
     }
 }

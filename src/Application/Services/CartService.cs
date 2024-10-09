@@ -47,18 +47,37 @@ namespace Application.Services
             _cartRepository.Update(cart);
             return cart.TotalPrice;
         }
-        public float RemoveFromCart(int cartId, int productId)
+        public Cart RemoveFromCart(int cartId, int productId)
         {
-            var cart = _cartRepository.GetById(cartId);
+            var cart = _cartRepository.GetCartWithDetails(cartId);
             if (cart == null)
             {
                 throw new Exception($"El carrito con ID {cartId} no fue encontrado.");
             }
-            var detail = _cartRepository.GetDetailByProduct(cartId, productId);
-            _cartRepository.RemoveFromCart(cartId, productId);
-            cart.TotalPrice = cart.Details.Sum(d => d.Product.Price * d.Quantity);
+            if (cart.Details == null)
+            {
+                throw new Exception($"El carrito con ID {cartId} no posee detalles");
+            }
+            CartDetail? detailToDelete = null;
+            foreach (var d in cart.Details)
+            {
+                if (d.Product?.Id == productId)
+                {
+                    detailToDelete = d;
+                    break;
+                }
+            }
+            if (detailToDelete == null)
+            {
+                throw new Exception($"No existe ningun producto para el ID {productId}");
+            }
+            else
+            {
+                cart.Details.Remove(detailToDelete);
+            }
+            cart.TotalPrice = cart.Details.Sum(t => t.Product.Price * t.Quantity);
             _cartRepository.Update(cart);
-            return cart.TotalPrice;
+            return cart;
         }
 
 
