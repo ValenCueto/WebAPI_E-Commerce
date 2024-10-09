@@ -63,6 +63,11 @@ namespace Application.Services
             user.Password = userToUpdate.Password;  
             _userRepository.Update(user);
         }
+
+        public User? GetByName(string name)
+        {
+            return _userRepository.GetByName(name);
+        }
     }
 
 

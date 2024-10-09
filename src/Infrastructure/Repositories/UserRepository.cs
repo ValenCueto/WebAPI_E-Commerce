@@ -14,5 +14,10 @@ namespace Infrastructure.Repositories
         {
 
         }
+
+        public User? GetByName(string name)
+        {
+            return _context.Users.FirstOrDefault(p => p.Name.ToLower() == name.ToLower());
+        }
     }
 }

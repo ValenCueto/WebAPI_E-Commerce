@@ -30,6 +30,12 @@ namespace Web.Controllers
             return Ok(_userService.GetById(id));
         }
 
+        [HttpGet("[Action]/{name}")]
+        public IActionResult GetByName([FromRoute] string name)
+        {
+            return Ok(_userService.GetByName(name));
+        }
+
         [HttpPost("[Action]")]
         public IActionResult Create(UserToCreate userToCreate)
         {

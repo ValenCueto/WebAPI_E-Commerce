@@ -15,5 +15,6 @@ namespace Application.Interfaces
         int Create(UserToCreate userToCreate);
         void Delete(int id);
         void Update(UserToUpdate userToUpdate, int id);
+        User? GetByName(string name);
     }
 }

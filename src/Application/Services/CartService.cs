@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Interfaces;
 using Domain.Entities;
 using Domain.Interfaces;
 
 namespace Application.Services
 {
-    public class CartService
+    public class CartService : ICartService
     {
         private readonly ICartRepository _cartRepository;
 
@@ -74,6 +75,39 @@ namespace Application.Services
             else
             {
                 cart.Details.Remove(detailToDelete);
+            }
+            cart.TotalPrice = cart.Details.Sum(t => t.Product.Price * t.Quantity);
+            _cartRepository.Update(cart);
+            return cart;
+        }
+
+        public Cart UpdateCart(int cartId, int productId, int newQuantity)
+        {
+            var cart = _cartRepository.GetCartWithDetails(cartId);
+            if (cart == null)
+            {
+                throw new Exception($"El carrito con ID {cartId} no fue encontrado.");
+            }
+            if (cart.Details == null)
+            {
+                throw new Exception($"El carrito con ID {cartId} no posee detalles");
+            }
+            CartDetail? detailToUpdate = null;
+            foreach (var d in cart.Details)
+            {
+                if (d.Product?.Id == productId)
+                {
+                    detailToUpdate = d;
+                    break;
+                }
+            }
+            if (detailToUpdate == null)
+            {
+                throw new Exception($"No existe ningun producto para el ID {productId}");
+            }
+            else
+            {
+                detailToUpdate.Quantity = newQuantity;
             }
             cart.TotalPrice = cart.Details.Sum(t => t.Product.Price * t.Quantity);
             _cartRepository.Update(cart);
