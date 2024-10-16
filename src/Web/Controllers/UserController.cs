@@ -39,7 +39,7 @@ namespace Web.Controllers
         [HttpPost("[Action]")]
         public IActionResult Create(UserToCreate userToCreate)
         {
-            _userService.Create(userToCreate);
+             _userService.Create(userToCreate);
             return Ok(userToCreate.Name);
         }
 
