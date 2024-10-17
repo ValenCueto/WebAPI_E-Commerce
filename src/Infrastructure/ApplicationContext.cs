@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -18,6 +19,21 @@ namespace Infrastructure
         public ApplicationContext(DbContextOptions<ApplicationContext> options) : base(options) 
         {
 
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    Id = 1,
+                    Name = "Raul",
+                    Password = "Raul123", 
+                    Email = "raul@gmail.com",
+                    Rol = RolEnum.Seller
+                });
+
+            base.OnModelCreating(modelBuilder);
         }
     }
 }

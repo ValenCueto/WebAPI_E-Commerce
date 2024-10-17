@@ -14,6 +14,5 @@ namespace Application.Models
         public string? UserName { get; set; }
         [Required]
         public string? Password { get; set; }
-        public RolEnum? Rol { get; set; } = null;
     }
 }

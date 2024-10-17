@@ -14,12 +14,10 @@ namespace Application.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        private readonly ICartRepository _cartRepository;
 
-        public UserService(IUserRepository userRepository, ICartRepository cartRepository)
+        public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
-            _cartRepository = cartRepository;
         }
 
         public List<User> GetAll()
@@ -41,7 +39,6 @@ namespace Application.Services
                 Password = userToCreate.Password,
                 Rol = RolEnum.Client
             };
-
 
             _userRepository.Create(user);
             return user.Id;

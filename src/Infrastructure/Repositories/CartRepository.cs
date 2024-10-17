@@ -18,7 +18,7 @@ namespace Infrastructure.Repositories
 
         public Cart? GetCartWithDetails(int cartId)
         {
-            return _context.Carts?.Include(c => c.Details).ThenInclude(d => d.Product).FirstOrDefault(c => c.Id == cartId);
+            return _context.Carts?.Include(c => c.User).Include(c => c.Details).ThenInclude(d => d.Product).FirstOrDefault(c => c.Id == cartId);
         }
         public CartDetail? GetDetailByProduct(int cartId, int productId)
         {
@@ -26,7 +26,10 @@ namespace Infrastructure.Repositories
             return cart?.Details?.FirstOrDefault(d => d.Product?.Id == productId);
         }
 
-        
+        public Cart? GetCartById(int id)
+        {
+            return _context.Carts?.Include(c => c.User).Include(c => c.Details).ThenInclude(d => d.Product).FirstOrDefault(c => c.Id == id); 
+        }
     }
 
 

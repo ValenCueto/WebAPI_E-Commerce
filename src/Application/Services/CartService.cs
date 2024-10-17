@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Interfaces;
+using Application.Models;
 using Domain.Entities;
 using Domain.Interfaces;
 
@@ -14,17 +15,51 @@ namespace Application.Services
         private readonly ICartRepository _cartRepository;
 
         private readonly IProductRepository _productRepository;
+        private readonly IUserRepository _userRepository;
 
-        public CartService(ICartRepository cartRepository, IProductRepository productRepository)
+        public CartService(ICartRepository cartRepository, IProductRepository productRepository, IUserRepository userRepository)
         {
             _cartRepository = cartRepository;
             _productRepository = productRepository;
+            _userRepository = userRepository;
         }
 
-        public Cart? GetCartById(int cartId)
+        public Cart? CreateCart(int userId)
         {
-            return _cartRepository.GetById(cartId);
+            var cart = new Cart();
+            var user = _userRepository.GetById(userId);
+            if (user == null)
+            {
+                throw new Exception("No se ha encontrado el usuario");
+            }
+            cart.SetUser(user);
+            _cartRepository.Create(cart);
+            return cart;
         }
+        public CartToResponse? GetCartById(int cartId)
+        {
+            var cart = _cartRepository.GetCartById(cartId);
+            if(cart == null)
+            {
+                throw new Exception("no se ha encontrado el carrito");
+            }
+            
+            var userToResponse = new UserToResponse()
+            {
+                Id = cart.User.Id,
+                Name = cart.User?.Name
+            };
+
+            var cartToResponse = new CartToResponse()
+            {
+                Id = cart.Id,
+                TotalPrice = cart.TotalPrice,
+                User = userToResponse,
+                Details = cart.Details
+            };
+            return cartToResponse;
+        }
+
         public float AddToCart(int cartId, int productId, int quantity)
         {
             var cart = _cartRepository.GetById(cartId);
@@ -48,7 +83,7 @@ namespace Application.Services
             _cartRepository.Update(cart);
             return cart.TotalPrice;
         }
-        public Cart RemoveFromCart(int cartId, int productId)
+        public CartToResponse? RemoveFromCart(int cartId, int productId)
         {
             var cart = _cartRepository.GetCartWithDetails(cartId);
             if (cart == null)
@@ -78,10 +113,23 @@ namespace Application.Services
             }
             cart.TotalPrice = cart.Details.Sum(t => t.Product.Price * t.Quantity);
             _cartRepository.Update(cart);
-            return cart;
+
+            var userToResponse = new UserToResponse()
+            {
+                Name = cart.User?.Name
+            };
+
+            var cartToResponse = new CartToResponse()
+            {
+                Id = cart.Id,
+                TotalPrice = cart.TotalPrice,
+                User = userToResponse,
+                Details = cart.Details
+            };
+            return cartToResponse;
         }
 
-        public Cart UpdateCart(int cartId, int productId, int newQuantity)
+        public CartToResponse? UpdateCart(int cartId, int productId, int newQuantity)
         {
             var cart = _cartRepository.GetCartWithDetails(cartId);
             if (cart == null)
@@ -111,7 +159,20 @@ namespace Application.Services
             }
             cart.TotalPrice = cart.Details.Sum(t => t.Product.Price * t.Quantity);
             _cartRepository.Update(cart);
-            return cart;
+
+            var userToResponse = new UserToResponse()
+            {
+                Name = cart.User?.Name
+            };
+
+            var cartToResponse = new CartToResponse()
+            {
+                Id = cart.Id,
+                TotalPrice = cart.TotalPrice,
+                User = userToResponse,
+                Details = cart.Details
+            };
+            return cartToResponse;
         }
 
 

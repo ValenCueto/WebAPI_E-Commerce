@@ -20,9 +20,9 @@ namespace Infrastructure.Services
     public class AuthenticationService : ICustomAuthenticationService
     {
         private readonly IUserRepository _userRepository;
-        private readonly AutenticacionServiceOptions _options;
+        private readonly AuthenticationServiceOptions _options;
 
-        public AuthenticationService(IUserRepository userRepository, IOptions<AutenticacionServiceOptions> options)
+        public AuthenticationService(IUserRepository userRepository, IOptions<AuthenticationServiceOptions> options)
         {
             _userRepository = userRepository;
             _options = options.Value;
@@ -37,10 +37,9 @@ namespace Infrastructure.Services
 
             if (user == null) return null;
 
-            if (authenticationRequest.Rol == RolEnum.Seller || authenticationRequest.Rol == RolEnum.Client)
-            {
-                if (user.Rol == authenticationRequest.Rol && user.Password == authenticationRequest.Password) return user;
-            }
+            if (user.Password == authenticationRequest.Password)
+                return user;
+
 
             return null;
 
@@ -67,7 +66,7 @@ namespace Infrastructure.Services
             var claimsForToken = new List<Claim>();
             claimsForToken.Add(new Claim("sub", user.Id.ToString())); //"sub" es una key estándar que significa unique user identifier, es decir, si mandamos el id del usuario por convención lo hacemos con la key "sub".
             claimsForToken.Add(new Claim("given_name", user.Name)); //Lo mismo para given_name y family_name, son las convenciones para nombre y apellido. Ustedes pueden usar lo que quieran, pero si alguien que no conoce la app
-            claimsForToken.Add(new Claim("role", authenticationRequest.Rol.ToString())); //Debería venir del usuario
+            claimsForToken.Add(new Claim("role", user.Rol.ToString())); //Debería venir del usuario
 
             var jwtSecurityToken = new JwtSecurityToken( //agregar using System.IdentityModel.Tokens.Jwt; Acá es donde se crea el token con toda la data que le pasamos antes.
               _options.Issuer,
@@ -84,9 +83,9 @@ namespace Infrastructure.Services
         }
 
 
-        public class AutenticacionServiceOptions
+        public class AuthenticationServiceOptions
         {
-            public const string AutenticacionService = "AutenticacionService";
+            public const string AuthenticationService = "AuthenticationService";
 
             public string Issuer { get; set; }
             public string Audience { get; set; }

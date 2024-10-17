@@ -3,6 +3,7 @@ using Application.Services;
 using Domain.Interfaces;
 using Infrastructure;
 using Infrastructure.Repositories;
+using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -65,10 +66,14 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
-//se agrega el ciclo de vida del Context en el BaseRepository?
+
+builder.Services.Configure<AuthenticationService.AuthenticationServiceOptions>(
+    builder.Configuration.GetSection(AuthenticationService.AuthenticationServiceOptions.AuthenticationService));
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<ICustomAuthenticationService, AuthenticationService>();
+
 
 
 var app = builder.Build();

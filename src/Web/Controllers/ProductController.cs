@@ -1,7 +1,10 @@
 ﻿using Application.Interfaces;
 using Application.Models;
+using Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Web.Controllers
 {
@@ -16,6 +19,18 @@ namespace Web.Controllers
             _productService = productService;
         }
 
+        private bool IsSeller()
+        {
+            var userRole = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+
+            if (userRole == RolEnum.Seller.ToString())
+            {
+                return true;
+            }
+            return false;
+        }
+
+
         [HttpGet("[Action]")]
         public IActionResult GetAll()
         {
@@ -28,33 +43,40 @@ namespace Web.Controllers
             return Ok(_productService.GetById(id));
         }
 
+        [Authorize]
         [HttpPost("[Action]")]
         public IActionResult Create([FromBody]ProductToCreate productToCreate)
         {
+            if (!IsSeller())
+            {
+                return Forbid();
+            }
             return Ok(_productService.Create(productToCreate));
         }
 
+        [Authorize]
         [HttpDelete("[Action]/{id}")]
         public IActionResult Delete([FromRoute] int id)
         {
+            if (!IsSeller())
+            {
+                return Forbid();
+            }
             _productService.Delete(id);
             return Ok();
         }
 
+        [Authorize]
         [HttpPut("[Action]/{id}")]
         public IActionResult Update([FromBody]ProductToUpdate productToUpdate, [FromRoute] int id)
         {
-            try
+            if (!IsSeller())
             {
-                _productService.Update(productToUpdate, id);
-                return Ok();
-
+                return Forbid();
             }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-
+           
+            _productService.Update(productToUpdate, id);
+            return Ok();
         }
 
         [HttpGet("[Action]/ {name}")]
