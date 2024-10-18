@@ -33,6 +33,7 @@ namespace Web.Controllers
         {
             var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub");
             return userIdClaim != null ? int.Parse(userIdClaim.Value) : -1;
+            
         }
 
         [HttpPost("[Action]/{userId}")]
@@ -63,12 +64,12 @@ namespace Web.Controllers
             {
                 return Forbid();
             }
-            //Preguntar para corregir, no deja agregar un producto al carrito por esta validacion
-            //var authenticatedUserId = GetAuthenticatedUserId();
-            //if (cart.User?.Id != authenticatedUserId)
-            //{
-            //    return BadRequest();
-            //}
+            
+            var authenticatedUserId = GetAuthenticatedUserId();
+            if (cart.User.Id != authenticatedUserId)
+            {
+               return BadRequest();
+            }
             return Ok(_cartService.AddToCart(cartId, productId, quantity));
         }
 

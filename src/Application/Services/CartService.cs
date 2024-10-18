@@ -72,6 +72,14 @@ namespace Application.Services
             {
                 throw new Exception($"El producto con ID {productId} no fue encontrado.");
             }
+            if (product.Stock == 0)
+            {
+                throw new Exception("No hay stock del producto");
+            }
+            if (quantity > product.Stock) 
+            {
+                throw new Exception("No hay stock suficiente");
+            }
             var newDetail = new CartDetail
             {
                 Cart = cart,
