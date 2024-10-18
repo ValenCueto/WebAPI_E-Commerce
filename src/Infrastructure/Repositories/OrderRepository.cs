@@ -1,5 +1,6 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,6 +14,11 @@ namespace Infrastructure.Repositories
         public OrderRepository(ApplicationContext context) : base (context) 
         {
 
+        }
+
+        public Order? GetOrderById(int id)
+        {
+            return _context.Orders?.Include(c => c.Client).Include(c => c.Details).ThenInclude(d => d.Product).FirstOrDefault(c => c.Id == id);
         }
     }
 }

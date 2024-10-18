@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Application.Interfaces;
+using Application.Models;
 using Domain.Entities;
 using Domain.Interfaces;
 
@@ -19,11 +20,29 @@ namespace Application.Services
             _orderRepository = orderRepository;
             _cartRepository = cartRepository;
         }
-        public List<Order> GetAll()
+        public OrderToResponse GetOrderById(int orderId)
         {
-            return _orderRepository.GetAll();
+            var order = _orderRepository.GetOrderById(orderId);
+            if (order == null)
+            {
+                throw new Exception($"No se encontro la orden con ID: {orderId}");
+            }
+            var userToResponse = new UserToResponse()
+            {
+                Id = order.Client.Id,
+                Name = order.Client.Name
+            };
+
+            var orderToResponse = new OrderToResponse()
+            {
+                Id = order.Id,
+                TotalPrice = order.TotalPrice,
+                User = userToResponse,
+                Details = order.Details,
+            };
+            return orderToResponse;
         }
-        public Order CreateOrderFromCart(int cartId)
+        public int CreateOrderFromCart(int cartId)
         {
             var cart = _cartRepository.GetCartById(cartId);
             if (cart == null)
@@ -48,13 +67,13 @@ namespace Application.Services
                 order.Details.Add(orderDetail);
             }
             _orderRepository.Create(order);
-            return order;
+            return order.Id;
         }
 
         public void DeleteOrderFromCart(int orderId)
         {
            
-            var order = _orderRepository.GetById(orderId);
+            var order = _orderRepository.GetOrderById(orderId);
             if (order == null)
             {
                 throw new Exception($"La orden con ID: {orderId} no se encontró");
