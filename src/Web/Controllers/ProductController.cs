@@ -79,7 +79,7 @@ namespace Web.Controllers
             return Ok();
         }
 
-        [HttpGet("[Action]/ {name}")]
+        [HttpGet("[Action]/{name}")]
         public IActionResult GetByName([FromRoute] string name)
         {
             return Ok(_productService.GetByName(name));

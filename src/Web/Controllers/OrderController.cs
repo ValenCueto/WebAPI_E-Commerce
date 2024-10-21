@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces;
+using Domain.Entities;
 using Domain.Enums;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -13,10 +14,12 @@ namespace Web.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly ICartService _cartService;
 
-        public OrderController(IOrderService orderService) 
+        public OrderController(IOrderService orderService, ICartService cartService) 
         {
             _orderService = orderService;
+            _cartService = cartService;
         }
 
         private bool IsSeller()
@@ -41,6 +44,12 @@ namespace Web.Controllers
             return false;
         }
 
+        private int GetAuthenticatedUserId()
+        {
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
+            return userIdClaim != null ? int.Parse(userIdClaim.Value) : -1;
+        }
+
         [HttpGet("[Action]/{orderId}")]
         public IActionResult GetById([FromRoute] int orderId)
         {
@@ -54,15 +63,22 @@ namespace Web.Controllers
         [HttpPost("[Action]/{cartId}")]
         public IActionResult CreateOrder([FromRoute] int cartId)
         {
+            var cart = _cartService.GetCartById(cartId);
             if (!IsClient())
             {
                 return Forbid();
+            }
+
+            var authenticatedUserId = GetAuthenticatedUserId();
+            if (cart.User.Id != authenticatedUserId)
+            {
+                return BadRequest();
             }
             return Ok(_orderService.CreateOrderFromCart(cartId));
         }
 
         [HttpDelete("[Action]/{orderId}")]
-        public IActionResult DeleteOrder(int orderId) 
+        public IActionResult DeleteOrder([FromRoute] int orderId) 
         {
             if (!IsSeller())
             {

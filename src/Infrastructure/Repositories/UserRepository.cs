@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 
 namespace Infrastructure.Repositories
 {
@@ -17,7 +18,12 @@ namespace Infrastructure.Repositories
 
         public User? GetByName(string name)
         {
-            return _context.Users.FirstOrDefault(p => p.Name.ToLower() == name.ToLower());
+            return _context.Users.FirstOrDefault(p => p.Name.ToLower().Trim() == name.ToLower().Trim());
+        }
+
+        public User? GetByEmail(string email)
+        {
+            return _context.Users.FirstOrDefault(p => p.Email.ToLower() == email.ToLower());
         }
     }
 }

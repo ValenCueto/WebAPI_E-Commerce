@@ -10,7 +10,7 @@ namespace Application.Interfaces
 {
     public interface ICartService
     {
-        Cart? CreateCart(int userId);
+        CartToResponse? CreateCart(int userId);
         CartToResponse? GetCartById(int cartId);
         float AddToCart(int cartId, int productId, int quantity);
         CartToResponse? RemoveFromCart(int cartId, int productId);

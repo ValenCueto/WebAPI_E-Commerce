@@ -32,6 +32,12 @@ namespace Application.Services
 
         public int Create(UserToCreate userToCreate)
         {
+            var existingUserName = _userRepository.GetByName(userToCreate.Name);
+            var existingUserEmail = _userRepository.GetByEmail(userToCreate.Email);
+            if (existingUserName is not null || existingUserEmail is not null)
+            {
+                throw new Exception("Ya existe un usuario con ese nombre o email");
+            }
             var user = new User()
             {
                 Name = userToCreate.Name,

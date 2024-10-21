@@ -43,6 +43,12 @@ namespace Web.Controllers
             {
                 return Forbid();
             }
+
+            var authenticatedUserId = GetAuthenticatedUserId();
+            if (userId != authenticatedUserId)
+            {
+                return BadRequest();
+            }
             return Ok(_cartService.CreateCart(userId));
         }
 
@@ -53,7 +59,14 @@ namespace Web.Controllers
             {
                 return Forbid();
             }
-            return Ok(_cartService.GetCartById(id));
+            var authenticatedUserId = GetAuthenticatedUserId();
+            var cart = _cartService.GetCartById(id);
+            if (cart.User.Id != authenticatedUserId)
+            {
+                return Forbid();
+            }
+
+            return Ok(cart);
         }
 
         [HttpPost("[Action]/{cartId}/{productId}/{quantity}")]
@@ -76,7 +89,14 @@ namespace Web.Controllers
         [HttpDelete("[Action]/{cartId}/{productId}")]
         public IActionResult RemoveFromCart([FromRoute] int cartId, [FromRoute] int productId)
         {
+            var cart = _cartService.GetCartById(cartId);
             if (!IsClient())
+            {
+                return Forbid();
+            }
+
+            var authenticatedUserId = GetAuthenticatedUserId();
+            if (cart.User.Id != authenticatedUserId)
             {
                 return Forbid();
             }
@@ -86,7 +106,14 @@ namespace Web.Controllers
         [HttpPut("[Action]/{cartId}/{productId}/{newQuantity}")]
         public IActionResult UpdateCart([FromRoute] int cartId, [FromRoute] int productId, [FromRoute] int newQuantity)
         {
+            var cart = _cartService.GetCartById(cartId);
             if (!IsClient())
+            {
+                return Forbid();
+            }
+
+            var authenticatedUserId = GetAuthenticatedUserId();
+            if (cart.User.Id != authenticatedUserId)
             {
                 return Forbid();
             }

@@ -10,6 +10,7 @@ namespace Application.Models
 {
     public class UserToCreate
     {
+        [Required]
         public string? Name { get; set; }
 
         [EmailAddress]
@@ -18,7 +19,6 @@ namespace Application.Models
         [Required]
         public string? Password { get; set; }
 
-        public RolEnum? Rol { get; set; } = null;
 
     }
 }

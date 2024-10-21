@@ -12,6 +12,7 @@ namespace Domain.Interfaces
         Cart? GetCartWithDetails(int cartId);
         CartDetail? GetDetailByProduct(int cartId, int productId);
         Cart? GetCartById(int id);
+        Cart? GetCartByUserId(int userId);
 
 
     }

@@ -17,7 +17,9 @@ namespace Infrastructure.Repositories
 
         public Product? GetByName(string name)
         {
-            return _context.Products.FirstOrDefault(p => p.Name.ToLower() == name.ToLower());
+            string comparedName = name.ToLower().Replace(" ", "").Trim();
+
+            return _context.Products.FirstOrDefault(p => p.Name.ToLower().Replace(" ", "").Trim() == comparedName);
         }
     }
 }

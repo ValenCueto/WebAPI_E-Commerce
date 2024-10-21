@@ -67,6 +67,12 @@ namespace Application.Services
                 order.Details.Add(orderDetail);
             }
             _orderRepository.Create(order);
+
+            cart.Details.Clear();
+            cart.TotalPrice = 0;
+
+      
+            _cartRepository.Update(cart);
             return order.Id;
         }
 

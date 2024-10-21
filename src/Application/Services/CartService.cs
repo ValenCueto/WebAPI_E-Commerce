@@ -24,17 +24,36 @@ namespace Application.Services
             _userRepository = userRepository;
         }
 
-        public Cart? CreateCart(int userId)
+        public CartToResponse? CreateCart(int userId)
         {
-            var cart = new Cart();
             var user = _userRepository.GetById(userId);
             if (user == null)
             {
                 throw new Exception("No se ha encontrado el usuario");
             }
+            var existingCart = _cartRepository.GetCartByUserId(userId);
+            if(existingCart is not null)
+            {
+                throw new Exception("ya existe un carrito para este usuario");
+            }
+            var cart = new Cart();
             cart.SetUser(user);
             _cartRepository.Create(cart);
-            return cart;
+
+            var userToResponse = new UserToResponse()
+            {
+                Id = cart.User.Id,
+                Name = cart.User?.Name
+            };
+
+            var cartToResponse = new CartToResponse()
+            {
+                Id = cart.Id,
+                TotalPrice = cart.TotalPrice,
+                User = userToResponse,
+                Details = cart.Details
+            };
+            return cartToResponse;
         }
         public CartToResponse? GetCartById(int cartId)
         {

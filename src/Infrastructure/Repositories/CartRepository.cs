@@ -30,6 +30,12 @@ namespace Infrastructure.Repositories
         {
             return _context.Carts?.Include(c => c.User).Include(c => c.Details).ThenInclude(d => d.Product).FirstOrDefault(c => c.Id == id); 
         }
+
+        public Cart? GetCartByUserId(int userId)
+        {
+            return _context.Carts.FirstOrDefault(c => c.User.Id == userId);
+        }
+
     }
 
 
