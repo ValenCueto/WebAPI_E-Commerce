@@ -31,7 +31,7 @@ namespace Web.Controllers
 
         private int GetAuthenticatedUserId()
         {
-            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == "sub");
+            var userIdClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier);
             return userIdClaim != null ? int.Parse(userIdClaim.Value) : -1;
             
         }
