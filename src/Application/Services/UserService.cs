@@ -20,14 +20,35 @@ namespace Application.Services
             _userRepository = userRepository;
         }
 
-        public List<User> GetAll()
+        public List<UserToResponse> GetAll()
         {
-            return _userRepository.GetAll();
+            var users = _userRepository.GetAll();
+
+            var userToResponseList = new List<UserToResponse>();
+
+            foreach (var user in users)
+            {
+                var userToResponse = new UserToResponse()
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email
+                };
+                userToResponseList.Add(userToResponse);
+            }
+            return userToResponseList;
         }
 
-        public User? GetById(int id)
+        public UserToResponse? GetById(int id)
         {
-            return _userRepository.GetById(id);
+            var user = _userRepository.GetById(id);
+            var userToResponse = new UserToResponse()
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email
+            };
+            return userToResponse;
         }
 
         public int Create(UserToCreate userToCreate)
@@ -69,9 +90,16 @@ namespace Application.Services
             _userRepository.Update(user);
         }
 
-        public User? GetByName(string name)
+        public UserToResponse? GetByName(string name)
         {
-            return _userRepository.GetByName(name);
+            var user = _userRepository.GetByName(name);
+            var userToResponse = new UserToResponse()
+            {
+                Id = user.Id,
+                Name = user.Name,
+                Email = user.Email
+            };
+            return userToResponse;
         }
     }
 

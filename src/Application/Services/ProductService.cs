@@ -32,6 +32,11 @@ namespace Application.Services
 
         public Product Create(ProductToCreate productToCreate)
         {
+            var existingProductName = _productRepository.GetByName(productToCreate.Name);
+            if (existingProductName is not null)
+            {
+                throw new Exception("Ya existe un producto con ese nombre");
+            }
             var product = new Product()
             {
                 Name = productToCreate.Name,

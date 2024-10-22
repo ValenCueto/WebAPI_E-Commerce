@@ -30,7 +30,8 @@ namespace Application.Services
             var userToResponse = new UserToResponse()
             {
                 Id = order.Client.Id,
-                Name = order.Client.Name
+                Name = order.Client.Name,
+                Email = order.Client.Email
             };
 
             var orderToResponse = new OrderToResponse()

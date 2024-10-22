@@ -10,11 +10,11 @@ namespace Application.Interfaces
 {
     public interface IUserService
     {
-        List<User> GetAll();
-        User? GetById(int id);
+        List<UserToResponse> GetAll();
+        UserToResponse? GetById(int id);
         int Create(UserToCreate userToCreate);
         void Delete(int id);
         void Update(UserToUpdate userToUpdate, int id);
-        User? GetByName(string name);
+        UserToResponse? GetByName(string name);
     }
 }
