@@ -14,10 +14,14 @@ namespace Application.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
+        private readonly ICartRepository _cartRepository;
+        private readonly IOrderRepository _orderRepository;
 
-        public UserService(IUserRepository userRepository)
+        public UserService(IUserRepository userRepository, ICartRepository cartRepository, IOrderRepository orderRepository)
         {
             _userRepository = userRepository;
+            _cartRepository = cartRepository;
+            _orderRepository = orderRepository;
         }
 
         public List<UserToResponse> GetAll()
@@ -82,7 +86,27 @@ namespace Application.Services
             {
                 throw new Exception("El usuario no fue encontrado");
             }
-            _userRepository.Delete(user);
+
+            var cart = _cartRepository.GetCartByUserId(id);
+            if(cart == null)
+            {
+                throw new Exception("No se ha encontrado el carrito");
+            }
+            var order = _orderRepository.GetOrdersByUserId(id);
+            if(order == null)
+            {
+               throw new Exception("no se ha encontrado la orden"); 
+            }
+
+            if (!cart.Details.Any() && !order.Any())
+            {
+                _userRepository.Delete(user);
+            }
+            else
+            {
+                throw new Exception("para eliminar un usuario, el carrito debe estar vacio y no debe haber ninguna orden confirmada");
+            }
+
         }
 
         public void Update(UserToUpdate userToUpdate, int id)

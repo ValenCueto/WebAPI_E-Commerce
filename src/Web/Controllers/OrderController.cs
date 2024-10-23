@@ -80,10 +80,6 @@ namespace Web.Controllers
         [HttpDelete("[Action]/{orderId}")]
         public IActionResult DeleteOrder([FromRoute] int orderId) 
         {
-            if (!IsSeller())
-            {
-                return Forbid();
-            }
             _orderService.DeleteOrderFromCart(orderId);
             return Ok();
         }

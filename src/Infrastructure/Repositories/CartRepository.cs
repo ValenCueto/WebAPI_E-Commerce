@@ -36,6 +36,7 @@ namespace Infrastructure.Repositories
             return _context.Carts.FirstOrDefault(c => c.User.Id == userId);
         }
 
+
     }
 
 

@@ -43,7 +43,8 @@ namespace Application.Services
             var userToResponse = new UserToResponse()
             {
                 Id = cart.User.Id,
-                Name = cart.User?.Name
+                Name = cart.User?.Name,
+                Email = cart.User.Email
             };
 
             var cartToResponse = new CartToResponse()
