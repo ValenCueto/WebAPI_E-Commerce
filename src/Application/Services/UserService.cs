@@ -98,13 +98,13 @@ namespace Application.Services
                throw new Exception("no se ha encontrado la orden"); 
             }
 
-            if (!cart.Details.Any() && !order.Any())
+            if (cart.Details.Any() || order.Any())
             {
-                _userRepository.Delete(user);
+                throw new Exception("para eliminar un usuario, el carrito debe estar vacio y no debe haber ninguna orden confirmada");
             }
             else
             {
-                throw new Exception("para eliminar un usuario, el carrito debe estar vacio y no debe haber ninguna orden confirmada");
+                _userRepository.Delete(user);
             }
 
         }
