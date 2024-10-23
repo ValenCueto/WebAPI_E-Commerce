@@ -27,7 +27,12 @@ namespace Application.Services
 
         public Product? GetById(int id)
         {
-            return _productRepository.GetById(id);
+            var product = _productRepository.GetById(id);
+            if (product == null)
+            {
+                throw new Exception("el producto no fue encontrado");
+            }
+            return product;
         }
 
         public Product Create(ProductToCreate productToCreate)
@@ -53,19 +58,32 @@ namespace Application.Services
         public void Delete(int id)
         {
             var product = _productRepository.GetById(id);
+            if (product == null)
+            {
+                throw new Exception("el producto no fue encontrado");
+            }
             _productRepository.Delete(product);
         }
 
         public void Update(ProductToUpdate productToUpdate, int id)
         {
             var product = _productRepository.GetById(id);
+            if (product == null)
+            {
+                throw new Exception("el producto no fue encontrado");
+            }
             product.Price = productToUpdate.Price;
             product.Stock = productToUpdate.Stock;
             _productRepository.Update(product);
         }
         public Product? GetByName(string name)
         {
-            return _productRepository.GetByName(name);
+            var product =  _productRepository.GetByName(name);
+            if (product == null)
+            {
+                throw new Exception("el producto no fue encontrado");
+            }
+            return product;
         }
     }
 }

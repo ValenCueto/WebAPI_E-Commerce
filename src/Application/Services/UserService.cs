@@ -42,6 +42,10 @@ namespace Application.Services
         public UserToResponse? GetById(int id)
         {
             var user = _userRepository.GetById(id);
+            if (user == null)
+            {
+                throw new Exception("El usuario no fue encontrado");
+            }
             var userToResponse = new UserToResponse()
             {
                 Id = user.Id,
@@ -74,6 +78,10 @@ namespace Application.Services
         public void Delete(int id)
         {
             var user = _userRepository.GetById(id);
+            if (user == null)
+            {
+                throw new Exception("El usuario no fue encontrado");
+            }
             _userRepository.Delete(user);
         }
 
@@ -93,6 +101,10 @@ namespace Application.Services
         public UserToResponse? GetByName(string name)
         {
             var user = _userRepository.GetByName(name);
+            if (user == null)
+            {
+                throw new Exception("El usuario no fue encontrado");
+            }
             var userToResponse = new UserToResponse()
             {
                 Id = user.Id,
