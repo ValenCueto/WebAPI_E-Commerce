@@ -14,11 +14,13 @@ namespace Application.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly ICartRepository _cartRepository;
+        private readonly IProductRepository _productRepository;
 
-        public OrderService(IOrderRepository orderRepository, ICartRepository cartRepository)
+        public OrderService(IOrderRepository orderRepository, ICartRepository cartRepository, IProductRepository productRepository)
         {
             _orderRepository = orderRepository;
             _cartRepository = cartRepository;
+            _productRepository = productRepository;
         }
         public OrderToResponse GetOrderById(int orderId)
         {
@@ -59,6 +61,13 @@ namespace Application.Services
 
             foreach (var cartDetail in cart.Details)
             {
+                var product = cartDetail.Product;
+                if (product.Stock < cartDetail.Quantity)
+                {
+                    throw new Exception($"Ya se agotó el stock del producto {product.Name}");
+                }
+                product.Stock -= cartDetail.Quantity;
+
                 var orderDetail = new OrderDetail
                 {
                     Product = cartDetail.Product,
@@ -66,6 +75,7 @@ namespace Application.Services
                     Order = order
                 };
                 order.Details.Add(orderDetail);
+                _productRepository.Update(product);
             }
             _orderRepository.Create(order);
 
@@ -84,6 +94,13 @@ namespace Application.Services
             if (order == null)
             {
                 throw new Exception($"La orden con ID: {orderId} no se encontró");
+            }
+
+            foreach (var detail in order.Details)
+            {
+                var product = detail.Product;
+                product.Stock += detail.Quantity; 
+                _productRepository.Update(product);
             }
             _orderRepository.Delete(order);
         }

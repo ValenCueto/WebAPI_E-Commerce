@@ -79,36 +79,6 @@ namespace Application.Services
             return user.Id;
         }
 
-        public void Delete(int id)
-        {
-            var user = _userRepository.GetById(id);
-            if (user == null)
-            {
-                throw new Exception("El usuario no fue encontrado");
-            }
-
-            var cart = _cartRepository.GetCartByUserId(id);
-            if(cart == null)
-            {
-                throw new Exception("No se ha encontrado el carrito");
-            }
-            var order = _orderRepository.GetOrdersByUserId(id);
-            if(order == null)
-            {
-               throw new Exception("no se ha encontrado la orden"); 
-            }
-
-            if (cart.Details.Any() || order.Any())
-            {
-                throw new Exception("para eliminar un usuario, el carrito debe estar vacio y no debe haber ninguna orden confirmada");
-            }
-            else
-            {
-                _userRepository.Delete(user);
-            }
-
-        }
-
         public void Update(UserToUpdate userToUpdate, int id)
         {
             var user = _userRepository.GetById(id);

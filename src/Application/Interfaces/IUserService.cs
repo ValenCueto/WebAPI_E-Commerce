@@ -13,7 +13,6 @@ namespace Application.Interfaces
         List<UserToResponse> GetAll();
         UserToResponse? GetById(int id);
         int Create(UserToCreate userToCreate);
-        void Delete(int id);
         void Update(UserToUpdate userToUpdate, int id);
         UserToResponse? GetByName(string name);
     }

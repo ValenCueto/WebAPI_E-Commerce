@@ -87,23 +87,6 @@ namespace Web.Controllers
             return Ok(userToCreate.Name);
         }
 
-        [Authorize]
-        [HttpDelete("[Action]/{id}")]
-        public IActionResult Delete([FromRoute] int id)
-        {
-            if (!IsClient())
-            {
-                return Forbid();
-            }
-
-            var userAuthenticated = GetAuthenticatedUserId();
-            if(userAuthenticated == id)
-            {
-                _userService.Delete(id);
-                return Ok();
-            }
-            return BadRequest();
-        }
 
         [Authorize]
         [HttpPut("[Action]/{id}")]
