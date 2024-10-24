@@ -50,6 +50,27 @@ namespace Web.Controllers
             return userIdClaim != null ? int.Parse(userIdClaim.Value) : -1;
         }
 
+        [HttpGet("[Action]")]
+        public IActionResult GetAllOrders()
+        {
+            if (!IsSeller())
+            {
+                return Forbid();
+            }
+            return Ok(_orderService.GetAllOrders());
+        }
+
+        [HttpGet("[Action]/{userId}")]
+        public IActionResult GetHistorialByUserId()
+        {
+            var authenticatedUserId = GetAuthenticatedUserId();
+            if (!IsClient())
+            {
+                return Forbid();
+            }
+            return Ok(_orderService.GetOrdersByUserId(authenticatedUserId));
+        }
+
         [HttpGet("[Action]/{orderId}")]
         public IActionResult GetById([FromRoute] int orderId)
         {
@@ -80,6 +101,16 @@ namespace Web.Controllers
         [HttpDelete("[Action]/{orderId}")]
         public IActionResult DeleteOrder([FromRoute] int orderId) 
         {
+            var order = _orderService.GetOrderById(orderId);
+            if (IsClient())
+            {
+                var authenticatedUserId = GetAuthenticatedUserId();
+
+                if (order.User.Id != authenticatedUserId)
+                {
+                    return Forbid();
+                }
+            }
             _orderService.DeleteOrderFromCart(orderId);
             return Ok();
         }

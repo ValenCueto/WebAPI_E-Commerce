@@ -22,6 +22,67 @@ namespace Application.Services
             _cartRepository = cartRepository;
             _productRepository = productRepository;
         }
+
+        public List<OrderToResponse> GetAllOrders()
+        {
+            var orders = _orderRepository.GetAllOrders();
+            var ordersToResponse = new List<OrderToResponse>();
+
+            foreach (var order in orders)
+            {
+                var userToResponse = new UserToResponse
+                {
+                    Id = order.Client.Id,
+                    Name = order.Client.Name,
+                    Email = order.Client.Email
+                };
+
+                var orderToResponse = new OrderToResponse
+                {
+                    Id = order.Id,
+                    TotalPrice = order.TotalPrice,
+                    User = userToResponse,
+                    Details = order.Details
+                };
+
+                ordersToResponse.Add(orderToResponse);
+            }
+
+            return ordersToResponse;
+        }
+
+        public List<OrderToResponse> GetOrdersByUserId(int userId)
+        {
+            var orders = _orderRepository.GetOrdersByUserId(userId);
+            if(orders == null || orders.Count == 0)
+            {
+                throw new Exception("no se ha encontrado la orden");
+            }
+            var ordersToResponse = new List<OrderToResponse>();
+
+            foreach (var order in orders)
+            {
+                var userToResponse = new UserToResponse
+                {
+                    Id = order.Client.Id,
+                    Name = order.Client.Name,
+                    Email = order.Client.Email
+                };
+
+                var orderToResponse = new OrderToResponse
+                {
+                    Id = order.Id,
+                    TotalPrice = order.TotalPrice,
+                    User = userToResponse,
+                    Details = order.Details
+                };
+
+                ordersToResponse.Add(orderToResponse);
+            }
+
+            return ordersToResponse;
+        }
+
         public OrderToResponse GetOrderById(int orderId)
         {
             var order = _orderRepository.GetOrderById(orderId);

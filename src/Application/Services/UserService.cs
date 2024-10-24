@@ -14,14 +14,10 @@ namespace Application.Services
     public class UserService : IUserService
     {
         private readonly IUserRepository _userRepository;
-        private readonly ICartRepository _cartRepository;
-        private readonly IOrderRepository _orderRepository;
 
-        public UserService(IUserRepository userRepository, ICartRepository cartRepository, IOrderRepository orderRepository)
+        public UserService(IUserRepository userRepository)
         {
             _userRepository = userRepository;
-            _cartRepository = cartRepository;
-            _orderRepository = orderRepository;
         }
 
         public List<UserToResponse> GetAll()

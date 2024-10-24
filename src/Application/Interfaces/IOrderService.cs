@@ -10,6 +10,8 @@ namespace Application.Interfaces
 {
     public interface IOrderService
     {
+        List<OrderToResponse> GetAllOrders();
+        List<OrderToResponse> GetOrdersByUserId(int userId);
         OrderToResponse GetOrderById(int orderId);
         int CreateOrderFromCart(int cartId);
         void DeleteOrderFromCart(int orderId);

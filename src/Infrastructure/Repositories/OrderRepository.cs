@@ -21,9 +21,17 @@ namespace Infrastructure.Repositories
             return _context.Orders?.Include(c => c.Client).Include(c => c.Details).ThenInclude(d => d.Product).FirstOrDefault(c => c.Id == id);
         }
 
+        public List<Order> GetAllOrders()
+        {
+            return _context.Orders.Include(o => o.Client).Include(o => o.Details).ThenInclude(d => d.Product).ToList();
+
+        }
+
         public List<Order> GetOrdersByUserId(int userId)
         {
-            return _context.Orders.Include(o => o.Details).Where(o => o.Client.Id == userId).ToList();
+            return _context.Orders.Include(o => o.Details).ThenInclude(d => d.Product).Include(o => o.Client).Where(o => o.Client.Id == userId).ToList();
         }
+
+
     }
 }

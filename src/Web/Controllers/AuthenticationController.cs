@@ -29,7 +29,7 @@ namespace Web.Controllers
         public ActionResult<string> Authenticate(AuthenticationRequest authenticationRequest) //Enviamos como parámetro la clase que creamos arriba
         {
             string token = _customAuthenticationService.Authenticate(authenticationRequest); //Lo primero que hacemos es llamar a una función que valide los parámetros que enviamos.
-
+           
             return Ok(token);
         }
     }
