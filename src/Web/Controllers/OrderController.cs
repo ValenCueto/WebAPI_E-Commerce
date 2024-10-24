@@ -60,7 +60,7 @@ namespace Web.Controllers
             return Ok(_orderService.GetAllOrders());
         }
 
-        [HttpGet("[Action]/{userId}")]
+        [HttpGet("[Action]")]
         public IActionResult GetHistorialByUserId()
         {
             var authenticatedUserId = GetAuthenticatedUserId();
