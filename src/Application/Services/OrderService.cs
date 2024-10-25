@@ -87,7 +87,7 @@ namespace Application.Services
         public OrderToResponse GetOrderById(int orderId)
         {
             var order = _orderRepository.GetOrderById(orderId);
-            if (order == null || !order.Client.IsActive)
+            if (order == null)
             {
                 throw new NotFoundException($"No se encontro la orden con ID: {orderId}");
             }
