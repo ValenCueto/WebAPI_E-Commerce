@@ -24,7 +24,7 @@ namespace Infrastructure.Repositories
         {
             string comparedName = name.ToLower().Replace(" ", "").Trim();
 
-            return _context.Products.FirstOrDefault(p => p.Name.ToLower().Replace(" ", "").Trim() == comparedName);
+            return _context.Products.FirstOrDefault(p => p.IsActive && p.Name.ToLower().Replace(" ", "").Trim() == comparedName);
         }
     }
 }

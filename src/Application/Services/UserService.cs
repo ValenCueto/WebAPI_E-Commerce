@@ -90,6 +90,12 @@ namespace Application.Services
 
         public void Update(UserToUpdate userToUpdate, int id)
         {
+            var existingUserName = _userRepository.GetByName(userToUpdate.Name);
+            var existingUserEmail = _userRepository.GetByEmail(userToUpdate.Email);
+            if (existingUserName is not null || existingUserEmail is not null)
+            {
+                throw new BadRequestException("Ya existe un usuario con ese nombre o email");
+            }
             var user = _userRepository.GetById(id);
             if (user == null || !user.IsActive)
             {

@@ -151,6 +151,9 @@ namespace Web.Controllers
             catch(NotFoundException ex)
             {
                 return NotFound(ex.Message);
+            }catch(BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
             }
            
 

@@ -82,7 +82,7 @@ namespace Application.Services
         public Product? GetByName(string name)
         {
             var product =  _productRepository.GetByName(name);
-            if (product == null || !product.IsActive)
+            if (product == null)
             {
                 throw new NotFoundException("El producto no fue encontrado");
             }

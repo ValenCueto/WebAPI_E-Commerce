@@ -18,12 +18,12 @@ namespace Infrastructure.Repositories
 
         public User? GetByName(string name)
         {
-            return _context.Users.FirstOrDefault(p => p.Name.ToLower().Trim() == name.ToLower().Trim());
+            return _context.Users.FirstOrDefault(p => p.Name.ToLower().Trim() == name.ToLower().Trim() && p.IsActive);
         }
 
         public User? GetByEmail(string email)
         {
-            return _context.Users.FirstOrDefault(p => p.Email.ToLower() == email.ToLower());
+            return _context.Users.FirstOrDefault(p => p.Email.ToLower() == email.ToLower() && p.IsActive);
         }
     }
 }
