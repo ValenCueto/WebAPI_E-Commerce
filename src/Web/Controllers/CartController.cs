@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -36,88 +37,137 @@ namespace Web.Controllers
             
         }
 
-        [HttpPost("[Action]/{userId}")]
-        public IActionResult CreateCart([FromRoute] int userId)
+        [HttpPost("[Action]")]
+        public IActionResult CreateCart()
         {
-            if (!IsClient())
+            try
             {
-                return Forbid();
-            }
+                if (!IsClient())
+                {
+                    return Forbid();
+                }
 
-            var authenticatedUserId = GetAuthenticatedUserId();
-            if (userId != authenticatedUserId)
-            {
-                return BadRequest();
+                var authenticatedUserId = GetAuthenticatedUserId();
+                
+                return Ok(_cartService.CreateCart(authenticatedUserId));
             }
-            return Ok(_cartService.CreateCart(userId));
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }catch(BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpGet("[Action]/{id}")]
         public IActionResult GetCartById([FromRoute] int id)
         {
-            if (!IsClient())
+            try
             {
-                return Forbid();
-            }
-            var authenticatedUserId = GetAuthenticatedUserId();
-            var cart = _cartService.GetCartById(id);
-            if (cart.User.Id != authenticatedUserId)
-            {
-                return Forbid();
-            }
+                if (!IsClient())
+                {
+                    return Forbid();
+                }
+                var authenticatedUserId = GetAuthenticatedUserId();
+                var cart = _cartService.GetCartById(id);
+                if (cart.User.Id != authenticatedUserId)
+                {
+                    return Forbid();
+                }
 
-            return Ok(cart);
+                return Ok(cart);
+            }
+            catch(NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            
         }
 
         [HttpPost("[Action]/{cartId}/{productId}/{quantity}")]
         public IActionResult AddToCart([FromRoute] int cartId, [FromRoute] int productId, [FromRoute] int quantity)
         {
-            var cart = _cartService.GetCartById(cartId);
-            if (!IsClient())
+            try
             {
-                return Forbid();
+                var cart = _cartService.GetCartById(cartId);
+                if (!IsClient())
+                {
+                    return Forbid();
+                }
+
+                var authenticatedUserId = GetAuthenticatedUserId();
+                if (cart.User.Id != authenticatedUserId)
+                {
+                    return BadRequest();
+                }
+                return Ok(_cartService.AddToCart(cartId, productId, quantity));
+            }
+            catch(NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }catch(BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
             }
             
-            var authenticatedUserId = GetAuthenticatedUserId();
-            if (cart.User.Id != authenticatedUserId)
-            {
-               return BadRequest();
-            }
-            return Ok(_cartService.AddToCart(cartId, productId, quantity));
         }
 
         [HttpDelete("[Action]/{cartId}/{productId}")]
         public IActionResult RemoveFromCart([FromRoute] int cartId, [FromRoute] int productId)
         {
-            var cart = _cartService.GetCartById(cartId);
-            if (!IsClient())
+            try
             {
-                return Forbid();
-            }
+                var cart = _cartService.GetCartById(cartId);
+                if (!IsClient())
+                {
+                    return Forbid();
+                }
 
-            var authenticatedUserId = GetAuthenticatedUserId();
-            if (cart.User.Id != authenticatedUserId)
-            {
-                return Forbid();
+                var authenticatedUserId = GetAuthenticatedUserId();
+                if (cart.User.Id != authenticatedUserId)
+                {
+                    return Forbid();
+                }
+                return Ok(_cartService.RemoveFromCart(cartId, productId));
             }
-            return Ok(_cartService.RemoveFromCart(cartId, productId));
+            catch(NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }catch(BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [HttpPut("[Action]/{cartId}/{productId}/{newQuantity}")]
         public IActionResult UpdateCart([FromRoute] int cartId, [FromRoute] int productId, [FromRoute] int newQuantity)
         {
-            var cart = _cartService.GetCartById(cartId);
-            if (!IsClient())
+            try
             {
-                return Forbid();
-            }
+                var cart = _cartService.GetCartById(cartId);
+                if (!IsClient())
+                {
+                    return Forbid();
+                }
 
-            var authenticatedUserId = GetAuthenticatedUserId();
-            if (cart.User.Id != authenticatedUserId)
-            {
-                return Forbid();
+                var authenticatedUserId = GetAuthenticatedUserId();
+                if (cart.User.Id != authenticatedUserId)
+                {
+                    return Forbid();
+                }
+                return Ok(_cartService.UpdateCart(cartId, productId, newQuantity));
             }
-            return Ok(_cartService.UpdateCart(cartId, productId, newQuantity)); 
+            catch(NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }catch(BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
 

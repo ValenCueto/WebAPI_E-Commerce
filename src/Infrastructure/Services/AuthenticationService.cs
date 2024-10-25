@@ -2,6 +2,7 @@
 using Application.Models;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Interfaces;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -37,6 +38,11 @@ namespace Infrastructure.Services
 
             if (user == null) return null;
 
+            if (!user.IsActive)
+            {
+                throw new UnauthorizedException("La cuenta del usuario no está activa.");
+            }
+
             if (user.Password == authenticationRequest.Password)
                 return user;
 
@@ -53,7 +59,7 @@ namespace Infrastructure.Services
 
             if (user == null)
             {
-                throw new Exception("User authentication failed");
+                throw new UnauthorizedException("User authentication failed");
             }
 
 

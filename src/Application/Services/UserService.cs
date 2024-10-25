@@ -7,6 +7,7 @@ using Application.Interfaces;
 using Application.Models;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Interfaces;
 
 namespace Application.Services
@@ -42,9 +43,9 @@ namespace Application.Services
         public UserToResponse? GetById(int id)
         {
             var user = _userRepository.GetById(id);
-            if (user == null)
+            if (user == null || !user.IsActive)
             {
-                throw new Exception("El usuario no fue encontrado");
+                throw new NotFoundException("El usuario no fue encontrado");
             }
             var userToResponse = new UserToResponse()
             {
@@ -61,27 +62,40 @@ namespace Application.Services
             var existingUserEmail = _userRepository.GetByEmail(userToCreate.Email);
             if (existingUserName is not null || existingUserEmail is not null)
             {
-                throw new Exception("Ya existe un usuario con ese nombre o email");
+                throw new BadRequestException("Ya existe un usuario con ese nombre o email");
             }
             var user = new User()
             {
                 Name = userToCreate.Name,
                 Email = userToCreate.Email,
                 Password = userToCreate.Password,
-                Rol = RolEnum.Client
+                Rol = RolEnum.Client,
+                IsActive = true
             };
 
             _userRepository.Create(user);
             return user.Id;
         }
 
+        public void DeactivateUser(int id)
+        {
+            var user = _userRepository.GetById(id);
+            if (user == null || !user.IsActive)
+            {
+                throw new NotFoundException($"El usuario con ID {id} no fue encontrado o ya está desactivado.");
+            }
+            user.IsActive = false; 
+            _userRepository.Update(user);
+        }
+
         public void Update(UserToUpdate userToUpdate, int id)
         {
             var user = _userRepository.GetById(id);
-            if (user == null)
+            if (user == null || !user.IsActive)
             {
-                throw new Exception($"El usuario con ID {id} no fue encontrado.");
+                throw new NotFoundException($"El usuario con ID {id} no fue encontrado.");
             }
+
             user.Name = userToUpdate.Name;
             user.Email = userToUpdate.Email;
             user.Password = userToUpdate.Password;  
@@ -91,9 +105,9 @@ namespace Application.Services
         public UserToResponse? GetByName(string name)
         {
             var user = _userRepository.GetByName(name);
-            if (user == null)
+            if (user == null || !user.IsActive)
             {
-                throw new Exception("El usuario no fue encontrado");
+                throw new NotFoundException("El usuario no fue encontrado");
             }
             var userToResponse = new UserToResponse()
             {

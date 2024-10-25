@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -63,56 +64,85 @@ namespace Web.Controllers
         [HttpGet("[Action]")]
         public IActionResult GetHistorialByUserId()
         {
-            var authenticatedUserId = GetAuthenticatedUserId();
-            if (!IsClient())
+            try
             {
-                return Forbid();
+                var authenticatedUserId = GetAuthenticatedUserId();
+                if (!IsClient())
+                {
+                    return Forbid();
+                }
+                return Ok(_orderService.GetOrdersByUserId(authenticatedUserId));
             }
-            return Ok(_orderService.GetOrdersByUserId(authenticatedUserId));
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            
         }
 
         [HttpGet("[Action]/{orderId}")]
         public IActionResult GetById([FromRoute] int orderId)
         {
-            if (!IsSeller())
+            try
             {
-                return Forbid();
+                if (!IsSeller())
+                {
+                    return Forbid();
+                }
+                return Ok(_orderService.GetOrderById(orderId));
             }
-            return Ok(_orderService.GetOrderById(orderId));
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+           
         }
 
         [HttpPost("[Action]/{cartId}")]
         public IActionResult CreateOrder([FromRoute] int cartId)
         {
-            var cart = _cartService.GetCartById(cartId);
-            if (!IsClient())
+            try
             {
-                return Forbid();
-            }
+                var cart = _cartService.GetCartById(cartId);
+                if (!IsClient())
+                {
+                    return Forbid();
+                }
 
-            var authenticatedUserId = GetAuthenticatedUserId();
-            if (cart.User.Id != authenticatedUserId)
+                var authenticatedUserId = GetAuthenticatedUserId();
+                if (cart.User.Id != authenticatedUserId)
+                {
+                    return BadRequest();
+                }
+                return Ok(_orderService.CreateOrderFromCart(cartId));
+            }catch (NotFoundException ex)
             {
-                return BadRequest();
+                return NotFound(ex.Message);
+            }catch (BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
             }
-            return Ok(_orderService.CreateOrderFromCart(cartId));
+            
         }
 
         [HttpDelete("[Action]/{orderId}")]
         public IActionResult DeleteOrder([FromRoute] int orderId) 
         {
-            var order = _orderService.GetOrderById(orderId);
-            if (IsClient())
+            try
             {
-                var authenticatedUserId = GetAuthenticatedUserId();
-
-                if (order.User.Id != authenticatedUserId)
+                var order = _orderService.GetOrderById(orderId);
+                if (!IsSeller())
                 {
-                    return Forbid();
+                   return Forbid();
                 }
+                _orderService.DeleteOrderFromCart(orderId);
+                return Ok();
             }
-            _orderService.DeleteOrderFromCart(orderId);
-            return Ok();
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            
         }
     }
 }

@@ -7,6 +7,7 @@ using Application.Interfaces;
 using Application.Models;
 using Domain.Entities;
 using Domain.Enums;
+using Domain.Exceptions;
 using Domain.Interfaces;
 
 namespace Application.Services
@@ -22,15 +23,15 @@ namespace Application.Services
 
         public List<Product> GetAll()
         {
-            return _productRepository.GetAll();
+            return _productRepository.GetAllActiveProducts();
         }
 
         public Product? GetById(int id)
         {
             var product = _productRepository.GetById(id);
-            if (product == null)
+            if (product == null || !product.IsActive)
             {
-                throw new Exception("el producto no fue encontrado");
+                throw new NotFoundException("El producto no fue encontrado");
             }
             return product;
         }
@@ -40,7 +41,7 @@ namespace Application.Services
             var existingProductName = _productRepository.GetByName(productToCreate.Name);
             if (existingProductName is not null)
             {
-                throw new Exception("Ya existe un producto con ese nombre");
+                throw new BadRequestException("Ya existe un producto con ese nombre");
             }
             var product = new Product()
             {
@@ -60,17 +61,19 @@ namespace Application.Services
             var product = _productRepository.GetById(id);
             if (product == null)
             {
-                throw new Exception("el producto no fue encontrado");
+                throw new NotFoundException("El producto no fue encontrado");
             }
-            _productRepository.Delete(product);
+            product.IsActive = false;
+
+            _productRepository.Update(product);
         }
 
         public void Update(ProductToUpdate productToUpdate, int id)
         {
             var product = _productRepository.GetById(id);
-            if (product == null)
+            if (product == null || !product.IsActive)
             {
-                throw new Exception("el producto no fue encontrado");
+                throw new NotFoundException("El producto no fue encontrado");
             }
             product.Price = productToUpdate.Price;
             product.Stock = productToUpdate.Stock;
@@ -79,9 +82,9 @@ namespace Application.Services
         public Product? GetByName(string name)
         {
             var product =  _productRepository.GetByName(name);
-            if (product == null)
+            if (product == null || !product.IsActive)
             {
-                throw new Exception("el producto no fue encontrado");
+                throw new NotFoundException("El producto no fue encontrado");
             }
             return product;
         }

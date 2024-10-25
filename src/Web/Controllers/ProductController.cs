@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces;
 using Application.Models;
 using Domain.Enums;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -40,49 +41,89 @@ namespace Web.Controllers
         [HttpGet("[Action]/{id}")]
         public IActionResult GetById([FromRoute] int id)
         {
-            return Ok(_productService.GetById(id));
+            try
+            {
+                return Ok(_productService.GetById(id));
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            
         }
 
         [Authorize]
         [HttpPost("[Action]")]
         public IActionResult Create([FromBody]ProductToCreate productToCreate)
         {
-            if (!IsSeller())
+            try
             {
-                return Forbid();
+                if (!IsSeller())
+                {
+                    return Forbid();
+                }
+                return Ok(_productService.Create(productToCreate));
             }
-            return Ok(_productService.Create(productToCreate));
+            catch (BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
         [Authorize]
         [HttpDelete("[Action]/{id}")]
         public IActionResult Delete([FromRoute] int id)
         {
-            if (!IsSeller())
+            try
             {
-                return Forbid();
+                if (!IsSeller())
+                {
+                    return Forbid();
+                }
+                _productService.Delete(id);
+                return Ok();
             }
-            _productService.Delete(id);
-            return Ok();
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            
         }
 
         [Authorize]
         [HttpPut("[Action]/{id}")]
         public IActionResult Update([FromBody]ProductToUpdate productToUpdate, [FromRoute] int id)
         {
-            if (!IsSeller())
+            try
             {
-                return Forbid();
+                if (!IsSeller())
+                {
+                    return Forbid();
+                }
+
+                _productService.Update(productToUpdate, id);
+                return Ok();
             }
-           
-            _productService.Update(productToUpdate, id);
-            return Ok();
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            
         }
 
         [HttpGet("[Action]/{name}")]
         public IActionResult GetByName([FromRoute] string name)
         {
-            return Ok(_productService.GetByName(name));
+            try
+            {
+                return Ok(_productService.GetByName(name));
+            }
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            
         }
     }
 

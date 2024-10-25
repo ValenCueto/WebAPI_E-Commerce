@@ -15,6 +15,11 @@ namespace Infrastructure.Repositories
 
         }
 
+        public List<Product> GetAllActiveProducts()
+        {
+            return _context.Products.Where(p => p.IsActive).ToList();
+        }
+
         public Product? GetByName(string name)
         {
             string comparedName = name.ToLower().Replace(" ", "").Trim();

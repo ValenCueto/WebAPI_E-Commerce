@@ -14,8 +14,6 @@ namespace Domain.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        [JsonIgnore]
-        public Cart? Cart {  get; set; }
         public int Quantity { get; set; }
         public Product? Product { get; set; }
     }

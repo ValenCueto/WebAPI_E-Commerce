@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Application.Interfaces;
 using Application.Models;
 using Domain.Entities;
+using Domain.Exceptions;
 using Domain.Interfaces;
 
 namespace Application.Services
@@ -27,14 +28,14 @@ namespace Application.Services
         public CartToResponse? CreateCart(int userId)
         {
             var user = _userRepository.GetById(userId);
-            if (user == null)
+            if (user == null || !user.IsActive)
             {
-                throw new Exception("No se ha encontrado el usuario");
+                throw new NotFoundException("No se ha encontrado el usuario");
             }
             var existingCart = _cartRepository.GetCartByUserId(userId);
             if(existingCart is not null)
             {
-                throw new Exception("ya existe un carrito para este usuario");
+                throw new BadRequestException("Ya existe un carrito para este usuario");
             }
             var cart = new Cart();
             cart.SetUser(user);
@@ -59,9 +60,9 @@ namespace Application.Services
         public CartToResponse? GetCartById(int cartId)
         {
             var cart = _cartRepository.GetCartById(cartId);
-            if(cart == null)
+            if(cart == null || !cart.User.IsActive)
             {
-                throw new Exception("no se ha encontrado el carrito");
+                throw new NotFoundException("No se ha encontrado el carrito");
             }
             
             var userToResponse = new UserToResponse()
@@ -84,26 +85,25 @@ namespace Application.Services
         public float AddToCart(int cartId, int productId, int quantity)
         {
             var cart = _cartRepository.GetById(cartId);
-            if (cart == null )
+            if (cart == null || !cart.User.IsActive)
             {
-                throw new Exception($"El carrito con ID {cartId} no fue encontrado.");
+                throw new NotFoundException($"El carrito con ID {cartId} no fue encontrado.");
             }
             var product = _productRepository.GetById(productId);
-            if (product == null) 
+            if (product == null || !product.IsActive) 
             {
-                throw new Exception($"El producto con ID {productId} no fue encontrado.");
+                throw new NotFoundException($"El producto con ID {productId} no fue encontrado.");
             }
             if (product.Stock == 0)
             {
-                throw new Exception("No hay stock del producto");
+                throw new BadRequestException("No hay stock del producto");
             }
             if (quantity > product.Stock) 
             {
-                throw new Exception("No hay stock suficiente");
+                throw new BadRequestException("No hay stock suficiente");
             }
             var newDetail = new CartDetail
             {
-                Cart = cart,
                 Product = product,
                 Quantity = quantity,
             };
@@ -115,13 +115,13 @@ namespace Application.Services
         public CartToResponse? RemoveFromCart(int cartId, int productId)
         {
             var cart = _cartRepository.GetCartWithDetails(cartId);
-            if (cart == null)
+            if (cart == null || !cart.User.IsActive)
             {
-                throw new Exception($"El carrito con ID {cartId} no fue encontrado.");
+                throw new NotFoundException($"El carrito con ID {cartId} no fue encontrado.");
             }
             if (cart.Details == null)
             {
-                throw new Exception($"El carrito con ID {cartId} no posee detalles");
+                throw new BadRequestException($"El carrito con ID {cartId} no posee detalles");
             }
             CartDetail? detailToDelete = null;
             foreach (var d in cart.Details)
@@ -134,7 +134,7 @@ namespace Application.Services
             }
             if (detailToDelete == null)
             {
-                throw new Exception($"No existe ningun producto para el ID {productId}");
+                throw new NotFoundException($"No existe ningun producto para el ID {productId}");
             }
             else
             {
@@ -164,13 +164,13 @@ namespace Application.Services
         public CartToResponse? UpdateCart(int cartId, int productId, int newQuantity)
         {
             var cart = _cartRepository.GetCartWithDetails(cartId);
-            if (cart == null)
+            if (cart == null || !cart.User.IsActive)
             {
-                throw new Exception($"El carrito con ID {cartId} no fue encontrado.");
+                throw new NotFoundException($"El carrito con ID {cartId} no fue encontrado.");
             }
             if (cart.Details == null)
             {
-                throw new Exception($"El carrito con ID {cartId} no posee detalles");
+                throw new BadRequestException($"El carrito con ID {cartId} no posee detalles");
             }
             CartDetail? detailToUpdate = null;
             foreach (var d in cart.Details)
@@ -183,7 +183,7 @@ namespace Application.Services
             }
             if (detailToUpdate == null)
             {
-                throw new Exception($"No existe ningun producto para el ID {productId}");
+                throw new NotFoundException($"No existe ningun producto para el ID {productId}");
             }
             else
             {

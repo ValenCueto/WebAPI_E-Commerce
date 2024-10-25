@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Application.Interfaces;
 using Application.Models;
 using Domain.Entities;
+using Domain.Exceptions;
 using Domain.Interfaces;
 
 namespace Application.Services
@@ -56,7 +57,7 @@ namespace Application.Services
             var orders = _orderRepository.GetOrdersByUserId(userId);
             if(orders == null || orders.Count == 0)
             {
-                throw new Exception("no se ha encontrado la orden");
+                throw new NotFoundException("No se ha encontrado la orden");
             }
             var ordersToResponse = new List<OrderToResponse>();
 
@@ -86,9 +87,9 @@ namespace Application.Services
         public OrderToResponse GetOrderById(int orderId)
         {
             var order = _orderRepository.GetOrderById(orderId);
-            if (order == null)
+            if (order == null || !order.Client.IsActive)
             {
-                throw new Exception($"No se encontro la orden con ID: {orderId}");
+                throw new NotFoundException($"No se encontro la orden con ID: {orderId}");
             }
             var userToResponse = new UserToResponse()
             {
@@ -109,9 +110,9 @@ namespace Application.Services
         public int CreateOrderFromCart(int cartId)
         {
             var cart = _cartRepository.GetCartById(cartId);
-            if (cart == null)
+            if (cart == null || !cart.User.IsActive)
             {
-                throw new Exception($"Carrito con ID {cartId} no encontrado.");
+                throw new NotFoundException($"Carrito con ID {cartId} no encontrado.");
             }
             var order = new Order
             {
@@ -123,9 +124,13 @@ namespace Application.Services
             foreach (var cartDetail in cart.Details)
             {
                 var product = cartDetail.Product;
+                if(product == null || !product.IsActive)
+                {
+                    throw new BadRequestException("El producto de la orden que desea confirmar ya no existe");
+                }
                 if (product.Stock < cartDetail.Quantity)
                 {
-                    throw new Exception($"Ya se agotó el stock del producto {product.Name}");
+                    throw new BadRequestException($"Ya se agotó el stock del producto {product.Name}");
                 }
                 product.Stock -= cartDetail.Quantity;
 
@@ -133,7 +138,6 @@ namespace Application.Services
                 {
                     Product = cartDetail.Product,
                     Quantity = cartDetail.Quantity,
-                    Order = order
                 };
                 order.Details.Add(orderDetail);
                 _productRepository.Update(product);
@@ -154,7 +158,7 @@ namespace Application.Services
             var order = _orderRepository.GetOrderById(orderId);
             if (order == null)
             {
-                throw new Exception($"La orden con ID: {orderId} no se encontró");
+                throw new NotFoundException($"La orden con ID: {orderId} no se encontró");
             }
 
             foreach (var detail in order.Details)

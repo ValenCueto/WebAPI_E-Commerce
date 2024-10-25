@@ -3,6 +3,7 @@ using Application.Interfaces;
 using Application.Models;
 using Application.Services;
 using Domain.Enums;
+using Domain.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -62,48 +63,96 @@ namespace Web.Controllers
         [HttpGet("[Action]/{id}")]
         public IActionResult GetById([FromRoute] int id)
         {
-            if (!IsSeller())
+            try
             {
-                return Forbid();
+                if (!IsSeller())
+                {
+                    return Forbid();
+                }
+                return Ok(_userService.GetById(id));
+            }catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
             }
-            return Ok(_userService.GetById(id));
+            
         }
 
         [Authorize]
         [HttpGet("[Action]/{name}")]
         public IActionResult GetByName([FromRoute] string name)
         {
-            if (!IsSeller())
+            try
             {
-                return Forbid();
+                if (!IsSeller())
+                {
+                    return Forbid();
+                }
+                return Ok(_userService.GetByName(name));
             }
-            return Ok(_userService.GetByName(name));
+            catch(NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            
         }
 
         [HttpPost("[Action]")]
         public IActionResult Create([FromBody] UserToCreate userToCreate)
         {
-             _userService.Create(userToCreate);
-            return Ok(userToCreate.Name);
+            try
+            {
+                _userService.Create(userToCreate);
+                return Ok(userToCreate.Name);
+            }
+            catch(BadRequestException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            
         }
 
-
         [Authorize]
-        [HttpPut("[Action]/{id}")]
-        public IActionResult Update([FromBody] UserToUpdate userToUpdate,[FromRoute] int id)
+        [HttpDelete("[Action]")]
+        public IActionResult Delete()
         {
-            if (!IsClient())
+            try
             {
-                return Forbid();
-            }
-
-            var userAuthenticated = GetAuthenticatedUserId();
-            if (userAuthenticated == id)
-            {
-                _userService.Update(userToUpdate, id);
+                if (!IsClient())
+                {
+                    return Forbid();
+                }
+                var userAuthenticated = GetAuthenticatedUserId();
+                _userService.DeactivateUser(userAuthenticated);
                 return Ok();
             }
-            return BadRequest();
+            catch (NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+           
+        }
+
+        [Authorize]
+        [HttpPut("[Action]")]
+        public IActionResult Update([FromBody] UserToUpdate userToUpdate)
+        {
+            try
+            {
+                if (!IsClient())
+                {
+                    return Forbid();
+                }
+
+                var userAuthenticated = GetAuthenticatedUserId();
+                _userService.Update(userToUpdate, userAuthenticated);
+                return Ok();
+                
+            }
+            catch(NotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+           
 
             
         }
